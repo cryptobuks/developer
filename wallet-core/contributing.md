@@ -6,7 +6,7 @@ Wallet Core implements the cryptographic functionality of blockchains. This incl
 
 This is a diagram representing how Trust Wallet interacts with Trust Wallet Core.
 
-![](/assets/wallet-core.png)
+![](/media/wallet-core.png)
 
 ## Library Design Guidelines
 
@@ -20,6 +20,10 @@ Keep this in mind when adding to the library:
 * C headers need to have annotations for the code generation tool, see below.
 * Use Protocol Buffers to represent models. C doesn't have good abstractions for variable-sized types.
 * Every time you modify the interface run the code generation tool and make sure the interface also makes sense in target languages.
+
+There is a [Sourcetrail](https://github.com/CoatiSoftware/Sourcetrail) [project file](https://github.com/trustwallet/wallet-core/blob/master/wallet_core.srctrlprj) might help you explore all the code (after build and run `bootstrap.sh`).
+
+![](/media/sourcetrail-screenshot.png)
 
 ## Pull Requests
 
@@ -45,17 +49,6 @@ Please follow these instructions when submitting a pull request \(PR\):
 
 Is it not uncommon for a PR to accumulate commits and merges with time. The library is in constant change. If your PR falls out of sync with the upstream master you need to rebase. We can't reliably review code that is spread over too many other changes to the codebase. Please use git's [interactive rebase](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) and if necessary create a new PR.
 
-## Before you start
-
-* Install Xcode
-* Install Xcode command line tools: `xcode-select --install`
-* Install other tools: `brew install cmake ninja boost autoconf automake libtool xcodegen clang-format rbenv`
-* Install Ruby 2.6.3: `rbenv install 2.6.3`
-* Install [Android Studio](https://developer.android.com/studio/index.html)
-* Install the [Android NDK](https://developer.android.com/ndk/guides/)
-
-If you are working on Linux please see [Linux](linux.md).
-
 ## Project organization
 
 This project has a number of different pieces. Each piece lives in its own subfolder.
@@ -65,20 +58,15 @@ This project has a number of different pieces. Each piece lives in its own subfo
 * The `include` folder contains the public C header files used to expose a cross-platform interface.
 * The `codegen` folder contains the code and templates used to generate code for different platforms and languages.
 * The `jni` folder contains the generated JNI interface and Java classes.
-* The `js` folder contains the generated NAPI C++ bindings and JavaScript classes.
 * The `android` folder contains the Android Studio project and integration tests.
 * The `swift` folder contains the generated Swift code and Xcode project.
 * The `trezor-crypto` folder contains a fork of [https://github.com/trezor/trezor-crypto/](https://github.com/trezor/trezor-crypto/) with modifications.
 * The `tests` folder contains unit tests.
 * THe `tools` folder contains scripts to automate common tasks.
 
-## Building
+## Prerequisites and Building
 
-Use the `bootstrap.sh` script in the root folder to install dependencies, generate files, build, and test. The build pipeline uses CMake. If you add or rename files you need to re-run cmake: `cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug`. If you only change existing files and want to run the tests you only need to run make: `make -Cbuild tests && build/tests/tests tests`.
-
-If you change interface files, `coins.json`, or Protobuf files you need to regenerate code: `tools/generate-files`.
-
-If you'd rather use and IDE for building and debugging you can specify the `-G` option to cmake. For instance to use Xcode call `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug` and use the generated project in the xcode folder.
+Please refer to [build instructions](building.md) for building the library locally.
 
 ## Testing
 
@@ -86,7 +74,6 @@ After running `bootstrap.sh` run `make -C build tests && build/tests/tests tests
 
 * Android: run `tools/android-test` or import `android` folder to Android Studio
 * iOS: run `tools/ios-test` or cd `swift` folder and open `TrustWalletCore.xcworkspace`
-* JavaScript: run `tools/js-test` or cd `js` folder, run `npm test`
 
 To run all tests in one go use the `tools/tests` script.
 
@@ -150,9 +137,13 @@ The wallet core code generator also parses coin configuration defined in `coins.
     "base58Hasher": "sha256d",                                  // [optional] xpub / xprv base58 hasher, base58(hasher(hd node data))
     "xpub": "zpub",                                             // [optional] hd version bytes defined in slip-0132
     "xprv": "zprv",                                             // [optional] hd version bytes defined in slip-0132
-    "explorer": "https://blockchair.com/bitcoin/transaction/",  // block explorer used to view transaction detail
-    "url": "https://bitcoin.org",                               // project homepage
-    "rpcNodeInfo": "https://github.com/trezor/blockbook"        // rpc node to query balance, utxo, send transactions
+    "explorer": "https://blockchair.com/bitcoin/transaction/",  // block explorer used to view transaction detail     
+    "info": {
+        "url": "https://ethereum.org", // project homepage
+        "client": "https://github.com/ethereum/go-ethereum", // rpc node to query balance, utxo, send transactions
+        "clientPublic": "https://mainnet.infura.io", // public rpc/api node to query balance, utxo, send transactions
+        "clientPuclicDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC" // API Reference
+    }
 }
 ```
 
@@ -168,6 +159,6 @@ Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStand
 
 ## More
 
-* Building on [Linux](linux.md)
+* [Build instructions](building.md)
 * [Adding Support for a New Blockchain](newblockchain.md)
 * [Releasing](releasing.md)

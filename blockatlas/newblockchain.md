@@ -23,7 +23,7 @@ Before starting development on Block Atlas integration, make sure that _all_ of 
    Integrate UTXO-based coins with BlockBook instead.
  - You are _NOT_ integrating a _token_ that runs on top of another blockchain (ERC-20, TRX10, ...)
  - Your coin is either
-    1) supported by [_wallet-core_](https://github.com/TrustWallet/wallet-core) OR
+    1) supported by [_wallet-core_](https://github.com/trustwallet/wallet-core) OR
     2) a ready-for-review PR for wallet-core has been submitted
  - Your coin has a public JSON-RPC or HTTP API.
  - Said API supports querying a list of transactions by address
@@ -170,9 +170,19 @@ After implementation the observer API gets enabled (required for tx push notific
 Write a test at `/platform/<yourcoin>/api_test.go` to ensure correct normalization.
 Try reading and normalizing a sample API response (copy paste output of REST client).
 
+Where there's a need to access the `coin.Coins` map in tests context, the map has to be initialized 
+by loading coins and their configuration from the yml file. 
+That's to make sure the map won't be empty when running tests.
+
+```go
+func initCoins() {
+	coin.Load("../../coins.yml")
+}
+```
+
 ### Pull Request
 
-As soon as you are done, file a pull request from your fork to `TrustWallet:master`.
+As soon as you are done, file a pull request from your fork to `trustwallet:master`.
 Our devs will get a notification and review your code soon.
 In case of design problems or bugs, we will request changes via GitHub code review.
 
@@ -181,7 +191,7 @@ You can speed up integration and merge approval by making sure that:
  - the Git history is relatively clean (`git rebase -i` to squash your commits)
  - only one pull request is filed (`git push -f` to overwrite the commit history of your PR).
    Please don't close and open PRs too often, our mail inboxes will be thankful.
- - no merge conflicts with `TrustWallet:master` exist
+ - no merge conflicts with `trustwallet:master` exist
  - all tests pass, your build gets a green tick
  - `go lint` has no complaints about your code
 
